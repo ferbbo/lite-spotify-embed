@@ -1,0 +1,57 @@
+{
+  "name": "lite-spotify-embed",
+  "version": "1.0.0",
+  "description": "Diego Benitez <https://github.com/ferbbo>",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ferbbo/lite-spotify-embed.git"
+  },
+  "main": "lite-spotify-embed.js",
+  "module": "lite-spotify-embed.js",
+  "types": "lite-spotify-embed.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "web components",
+    "spotify"
+  ],
+  "author": "",
+  "license": "ISC",
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "extends": [
+      "eslint-config-prettier"
+    ],
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "rules": {
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error"
+      ],
+      "import/no-unresolved": "off",
+      "import/extensions": [
+        "error",
+        "always",
+        {
+          "ignorePackages": true
+        }
+      ]
+    }
+  },
+  "prettier": {
+    "singleQuote": true,
+    "arrowParens": "avoid"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.2.0",
+    "@typescript-eslint/parser": "^8.2.0",
+    "eslint": "^9.9.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4"
+  }
+}
