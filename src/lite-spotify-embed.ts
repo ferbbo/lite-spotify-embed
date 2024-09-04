@@ -142,8 +142,8 @@ class LiteSpotifyEmbed extends HTMLElement {
                             background-color: transparent;
                             outline: 0;
                             margin-left: auto;
-                            width: 3rem;
-                            height: 3rem;
+                            width: 1.938 rem;
+                            height: 1.938 rem;
                             padding: 0;
                             transition: transform .3s ease;
                             cursor: pointer;
@@ -221,18 +221,19 @@ class LiteSpotifyEmbed extends HTMLElement {
   }
 
   addIframe() {
-    const $iframeHTML = `<iframe 
-    style="border-radius: 12px; position: absolute; z-index: 1; left: 0;" 
-    width="100%" height="236"
-    title="Spotify Embed: My Path to Spotify: Women in Engineering " 
-    frameborder="0" 
-    allowfullscreen
-    ${this.autoPlay ? 'allow="autoplay;' : ''} 
-    clipboard-write; 
-    encrypted-media; fullscreen; 
-    picture-in-picture" 
-    loading="lazy" 
-    src="https://open.spotify.com/embed/show/${this.tokenId}?utm_source=oembed"></iframe>`;
+    const $iframeHTML = `
+			<iframe 
+			style="border-radius: 12px; position: absolute; z-index: 1; left: 0;" 
+      src="https://open.spotify.com/embed/show/${this.tokenId}?utm_source=generator" 
+      width="100%" height="236" 
+      frameBorder="0" 
+      allowfullscreen="" 
+      allow="autoplay; 
+      clipboard-write; 
+      encrypted-media;
+      fullscreen;picture-in-picture" 
+      loading="lazy"></iframe>
+			`;
     this.$wrapper.insertAdjacentHTML('beforeend', $iframeHTML);
   }
   static get observedAttributes() {
