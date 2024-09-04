@@ -1,10 +1,9 @@
 /**
- * OBJETIVO:
- * Cargar version ligera del frame, utlizando una fakeFrame que utilice los recursos minimos (estilos, imagenes) que provea spotify.
- * Donde solo al reproducir el frame se descargue todos los recursos necesarios.
- * **/
+ * OBJECTIVE:
+ * Load a lightweight version of the frame using a fakeFrame that utilizes minimal resources (styles, images) provided by Spotify.
+ * Only when the frame is played, download all the necessary resources.
+ **/
 
-//Crear la clase
 interface ContentIframe {
   img: {
     height: number;
