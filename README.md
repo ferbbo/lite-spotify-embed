@@ -21,13 +21,14 @@ pnpm install
 ## Usage
 To use the component in your project, import it as a module:
 ```
-<script type="module">
+<script type="module"
   import LiteSpotifyEmbed from 'lite-spotify-embed';
 </script>
 
-<lite-spotify-embed
-      bg-color="#183870"
-      token-id="1XasBU0FRvQwTz36Kcd3QW></lite-spotify-embed>
+ <lite-spotify-embed
+      bg-color="#281090"
+      token-id="5pD4rkzDsfYMZZwtfYuaz1"
+      content-type="episode"
 ```
 
 ## License
