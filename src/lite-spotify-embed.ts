@@ -49,7 +49,6 @@ class LiteSpotifyEmbed extends HTMLElement {
   }
 
   insertGlobalStyles() {
-    // Verifica si los estilos ya han sido agregados
     if (document.getElementById('lite-spotify-embed-styles')) return;
     const styleElement = document.createElement('style');
     styleElement.id = 'lite-spotify-embed-styles';
@@ -282,5 +281,3 @@ class LiteSpotifyEmbed extends HTMLElement {
   }
 }
 customElements.define('lite-spotify-embed', LiteSpotifyEmbed);
-// Agregar el frame al click o al mostrarse en pantalla
-// Prefect de todas la urls importantes
