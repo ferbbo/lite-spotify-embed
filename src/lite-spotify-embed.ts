@@ -5,22 +5,32 @@
  * **/
 
 //Crear la clase
+interface ContentIframe {
+  img: {
+    height: number;
+    width: number;
+    url: string;
+  };
+  title: string;
+  iframeURL: string;
+  height: number;
+}
+
 class LiteSpotifyEmbed extends HTMLElement {
-  private _bgColor!: string;
-  private _tokenId: string;
   private $wrapper!: HTMLDivElement;
   private $btnPlay!: HTMLButtonElement;
-  private episode!: {
-    imgURL: string;
-    label: string;
-    iframeURL: string;
-  };
+  private _bgColor: string;
+  private tokenId: string;
+  private contentType: 'show' | 'track' | 'play-list' | 'episode' | null;
+  private content!: ContentIframe;
+
   [key: string]: any;
 
   constructor() {
     super();
     this._bgColor = '#4d4f51';
-    this._tokenId = '';
+    this.tokenId = '';
+    this.contentType = null;
     this.setDOM();
   }
 
@@ -33,13 +43,10 @@ class LiteSpotifyEmbed extends HTMLElement {
     this.updateBgColor();
   }
 
-  get tokenId(): string {
-    return this._tokenId;
-  }
-
-  set tokenId(val: string) {
-    this._tokenId = val;
-    this.fetchSpotify();
+  checkAttributteAndFetch() {
+    if (this.tokenId && this.contentType) {
+      this.fetchSpotify();
+    }
   }
 
   insertGlobalStyles() {
@@ -69,7 +76,7 @@ class LiteSpotifyEmbed extends HTMLElement {
     shadowDOM.innerHTML = `
             <div id="wrapper">
                 <div id="frame-fake">
-                    <img src="${this._imgId}" class="thumb"loading="lazy" />
+                    <img src="#" class="thumb"loading="lazy" />
                     <div class="desc">
                     <span class="logo">
                         <svg data-encore-id="icon" role="img" 
@@ -89,42 +96,38 @@ class LiteSpotifyEmbed extends HTMLElement {
                 </div>
             </div>
             <style>
-                * {
-                  box-sizing: border-box;
-                }
                 #wrapper {
                     position: relative;
+                    & > * {
+                      box-sizing: border-box;
+                    }
                 }
+                
                 #frame-fake {
-                    position: absolute;
-                    left: 0;
-                    right: 0;
                     background-color: ${this._bgColor};
                     border-radius: 12px;
                     padding: 16px;
                     display: flex;
                     gap: 20px;
-                    height: 236px;
                     .thumb {
-                        width: 200px;
-                        height: 200px;
-                        border-radius: 12px;
-                        object-fit: cover;
-                        transition: width .3s ease, height .3s ease ;
-                        box-shadow: 0 9px 9px 0 #0000001a, 0 0 29px 0 #0000001a;
+                      min-width: 120px;
+                      min-height: 120px;
+                      border-radius: 12px;
+                      object-fit: cover;
+                      transition: width .3s ease, height .3s ease ;
+                      box-shadow: 0 9px 9px 0 #0000001a, 0 0 29px 0 #0000001a;
                     }
                     .desc {
                         display: flex;
                         justify-content: space-between;
-                        width: calc(100%);
+                        width: 100%;
                         flex-direction: column;
-                        gap: 30px;
                         color: #fff;
                         overflow: hidden;
                         .title {
                             font-family: CircularSp,CircularSpBold,sans-serif;
-                            margin-top: 0;
-                            font-size: 1.5rem;
+                            margin: 0;
+                            font-size: 0.875rem;
                             display: initial;
                             white-space: nowrap;
                             overflow-x: hidden;
@@ -142,8 +145,8 @@ class LiteSpotifyEmbed extends HTMLElement {
                             background-color: transparent;
                             outline: 0;
                             margin-left: auto;
-                            width: 1.938 rem;
-                            height: 1.938 rem;
+                            width: 1.938rem;
+                            height: 1.938rem;
                             padding: 0;
                             transition: transform .3s ease;
                             cursor: pointer;
@@ -156,8 +159,8 @@ class LiteSpotifyEmbed extends HTMLElement {
                         }
                         .logo {
                             margin-left: auto;
-                            width: 1.875rem;
-                            height: 1.875rem;
+                            width: 1.5rem;
+                            height: 1.5rem;
                            
                         }
                     }
@@ -165,10 +168,6 @@ class LiteSpotifyEmbed extends HTMLElement {
 
                 @media screen and (max-width: 524px) {
                      #frame-fake  {
-                        img {
-                            width: 150px !important;
-                            height: 150px !important;
-                        }
                         .desc {
                             width: calc(100%);
                             .title  {
@@ -178,23 +177,41 @@ class LiteSpotifyEmbed extends HTMLElement {
                         }
                     }                     
                 }
+                @media screen and (max-height: 351px) {
+                  #frame-fake .thumb {
+                    width: 200px;
+                    height: 200px;
+                  }
+                }
+                @media screen and (max-height: 231px) {
+                  #frame-fake .thumb {
+                    width: 120px;
+                    height: 120px;
+                  }
+                }
             </style>
         `;
     this.$wrapper = shadowDOM.querySelector('#wrapper')!;
     this.$btnPlay = shadowDOM.querySelector('.btn-play')!;
   }
   async fetchSpotify() {
-    const URL = `https://open.spotify.com/oembed?url=https%3A%2F%2Fopen.spotify.com%2Fshow%2F${this.tokenId}`;
-    const response = await fetch(URL);
     try {
+      const response = await fetch(
+        `https://open.spotify.com/oembed?url=https%3A%2F%2Fopen.spotify.com%2F${this.contentType}%2F${this.tokenId}`,
+      );
       if (!response.ok) throw new Error(response.statusText);
       const data = await response.json();
-      this.episode = {
-        imgURL: data.thumbnail_url,
-        label: data.title,
+      this.content = {
+        img: {
+          url: data.thumbnail_url,
+          height: data.thumbnail_height,
+          width: data.thumbnail_width,
+        },
+        title: data.title,
         iframeURL: data.iframe_url,
+        height: data.height,
       };
-      this.updateFrame();
+      this.updateFrameFake();
     } catch (err) {
       alert('Error to load resource iframe: ' + err);
     }
@@ -204,28 +221,34 @@ class LiteSpotifyEmbed extends HTMLElement {
       '#frame-fake',
     )!.style.backgroundColor = this.bgColor;
   }
-  updateFrame() {
-    if (this.episode.imgURL) {
-      this.$wrapper.querySelector<HTMLImageElement>('#frame-fake .thumb')!.src =
-        this.episode.imgURL;
+  updateFrameFake() {
+    if (this.content.img.url) {
+      const $thumb =
+        this.$wrapper.querySelector<HTMLImageElement>('#frame-fake .thumb');
+      $thumb!.src = this.content.img.url;
     }
-    if (this.episode.label) {
+    if (this.content.title) {
       this.$wrapper.querySelector<HTMLParagraphElement>(
         '#frame-fake .title',
-      )!.textContent = this.episode.label;
+      )!.textContent = this.content.title;
     }
-    if (this.episode.iframeURL)
+    if (this.content.iframeURL) {
       this.$wrapper.querySelector<HTMLButtonElement>(
         '#frame-fake .btn-play',
       )!.disabled = false;
+    }
+    if (this.content.height) {
+      this.$wrapper.querySelector<HTMLDivElement>('#frame-fake')!.style.height =
+        `${this.content.height}px`;
+    }
   }
 
   addIframe() {
     const $iframeHTML = `
 			<iframe 
-			style="border-radius: 12px; position: absolute; z-index: 1; left: 0;" 
-      src="https://open.spotify.com/embed/show/${this.tokenId}?utm_source=generator" 
-      width="100%" height="236" 
+			style="border-radius: 12px; position: absolute; z-index: 1; left: 0;top:0;" 
+      src="${this.content.iframeURL}" 
+      width="100%" height="${this.content.height}" 
       frameBorder="0" 
       allowfullscreen="" 
       allow="autoplay; 
@@ -237,7 +260,7 @@ class LiteSpotifyEmbed extends HTMLElement {
     this.$wrapper.insertAdjacentHTML('beforeend', $iframeHTML);
   }
   static get observedAttributes() {
-    return ['bg-color', 'token-id'];
+    return ['bg-color', 'token-id', 'content-type'];
   }
 
   connectedCallback() {
@@ -256,6 +279,7 @@ class LiteSpotifyEmbed extends HTMLElement {
       /^[Aa-zZ\-]+$/.test(property) &&
       property.replace(/-([a-z])/g, g => g[1].toUpperCase());
     if (propFormated) this[propFormated] = newValue;
+    this.checkAttributteAndFetch();
   }
 }
 customElements.define('lite-spotify-embed', LiteSpotifyEmbed);

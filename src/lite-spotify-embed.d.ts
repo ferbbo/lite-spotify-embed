@@ -1,20 +1,30 @@
+interface ContentIframe {
+    img: {
+        height: number;
+        width: number;
+        url: string;
+    };
+    title: string;
+    iframeURL: string;
+    height: number;
+}
 declare class LiteSpotifyEmbed extends HTMLElement {
-    private _bgColor;
-    private _tokenId;
     private $wrapper;
     private $btnPlay;
-    private episode;
+    private _bgColor;
+    private tokenId;
+    private contentType;
+    private content;
     [key: string]: any;
     constructor();
     get bgColor(): string;
     set bgColor(val: string);
-    get tokenId(): string;
-    set tokenId(val: string);
+    checkAttributteAndFetch(): void;
     insertGlobalStyles(): void;
     setDOM(): void;
     fetchSpotify(): Promise<void>;
     updateBgColor(): void;
-    updateFrame(): void;
+    updateFrameFake(): void;
     addIframe(): void;
     static get observedAttributes(): string[];
     connectedCallback(): void;
