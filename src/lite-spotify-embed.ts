@@ -44,7 +44,7 @@ class LiteSpotifyEmbed extends HTMLElement {
 
   checkAttributteAndFetch() {
     if (this.tokenId && this.contentType) {
-      this.fetchSpotify();
+      this._fetchSpotify();
     }
   }
 
@@ -192,7 +192,7 @@ class LiteSpotifyEmbed extends HTMLElement {
     this.$wrapper = shadowDOM.querySelector('#wrapper')!;
     this.$btnPlay = shadowDOM.querySelector('.btn-play')!;
   }
-  async fetchSpotify() {
+  async _fetchSpotify() {
     try {
       const response = await fetch(
         `https://open.spotify.com/oembed?url=https%3A%2F%2Fopen.spotify.com%2F${this.contentType}%2F${this.tokenId}`,

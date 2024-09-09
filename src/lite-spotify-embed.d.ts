@@ -22,7 +22,7 @@ declare class LiteSpotifyEmbed extends HTMLElement {
     checkAttributteAndFetch(): void;
     insertGlobalStyles(): void;
     setDOM(): void;
-    fetchSpotify(): Promise<void>;
+    _fetchSpotify(): Promise<void>;
     updateBgColor(): void;
     updateFrameFake(): void;
     addIframe(): void;

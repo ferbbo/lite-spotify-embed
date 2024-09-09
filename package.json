@@ -10,7 +10,8 @@
   "module": "lite-spotify-embed.js",
   "types": "lite-spotify-embed.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "tsc && wtr src/test/**/*.test.js"
   },
   "keywords": [
     "web components",
@@ -46,12 +47,15 @@
     "arrowParens": "avoid"
   },
   "devDependencies": {
+    "@open-wc/testing": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^8.2.0",
     "@typescript-eslint/parser": "^8.2.0",
+    "@web/test-runner": "^0.18.3",
     "eslint": "^9.9.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "prettier": "^3.3.3",
+    "sinon": "^18.0.0",
     "typescript": "^5.5.4"
   }
 }
