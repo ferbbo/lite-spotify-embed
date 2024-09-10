@@ -1,6 +1,6 @@
 import { fixture, html, expect, aTimeout } from '@open-wc/testing';
 import sinon from 'sinon';
-import '../lite-spotify-embed.js';
+import './lite-spotify-embed.js';
 
 describe('LiteSpotifyEmbed', () => {
   let element, fetchSpotifySpy;
@@ -46,5 +46,6 @@ describe('LiteSpotifyEmbed', () => {
     const iframe = element.shadowRoot.querySelector('iframe');
     expect(iframe).to.exist;
     expect(iframe.src).to.equal('https://open.spotify.com/embed/track/12345');
+    expect(iframe.height).to.equal(`${element.content.height}`)
   });
 });
