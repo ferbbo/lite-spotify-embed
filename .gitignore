@@ -63,3 +63,7 @@ node_modules/
 .vscode-test
 
 .DS_Store
+
+*.js
+*.map
+*.d.ts
