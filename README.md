@@ -43,9 +43,7 @@ Here’s how you can use and configure the component's props:
 Clone the repository and install dependencies using `pnpm`:
 
 ```bash
-git clone https://github.com/ferbbo/lite-spotify-embed.git
-cd lite-spotify-embed
-pnpm install
+npm i lite-spotify-embed
 ```
 ## Usage
 To use the component in your project, import it as a module:
