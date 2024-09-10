@@ -40,17 +40,19 @@ Here’s how you can use and configure the component's props:
      
 ## Installation
 
-Clone the repository and install dependencies using `pnpm`:
+Clone the repository and install dependencies using `npm`:
 
 ```bash
-npm i lite-spotify-embed
+npm / pnpm i lite-spotify-embed
+# or
+yarn add lite-spotify-embed
 ```
 ## Usage
 To use the component in your project, import it as a module:
 ```
-  import 'lite-spotify-embed';
+import 'lite-spotify-embed';
 
- <lite-spotify-embed
+<lite-spotify-embed
       bg-color="#281090"
       token-id="5pD4rkzDsfYMZZwtfYuaz1"
       content-type="episode"
