@@ -7,15 +7,21 @@
     "url": "git@github.com:ferbbo/lite-spotify-embed.git"
   },
   "main": "lite-spotify-embed.js",
-  "module": "lite-spotify-embed.js",
   "types": "lite-spotify-embed.d.ts",
+  "module": "lite-spotify-embed.js",
   "scripts": {
     "build": "tsc",
-    "test": "tsc && wtr src/test/**/*.test.js"
+    "test": "npm run build && wtr src/**/*.test.js --coverage"
   },
   "keywords": [
     "web components",
-    "spotify"
+    "spotify",
+    "embed"
+  ],
+  "files": [
+    "src/lite-spotify-embed.d.ts",
+    "src/lite-spotify-embed.js",
+    "src/lite-spotify-embed.js.map"
   ],
   "author": "",
   "license": "ISC",

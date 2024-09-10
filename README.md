@@ -59,6 +59,14 @@ To use the component in your project, import it as a module:
       token-id="5pD4rkzDsfYMZZwtfYuaz1"
       content-type="episode"
 ```
+## Attributes
+
+| **Atributo**    | **Tipo**                              | **Descripción**                                                                                     | **Valores posibles**                  |
+|-----------------|---------------------------------------|-----------------------------------------------------------------------------------------------------|---------------------------------------|
+| `bg-color`      | `string`                              | Color de fondo del frame falso que se muestra antes de cargar el iframe.                             | Cualquier valor de color CSS válido   |
+| `token-id`      | `string`                              | ID único del contenido de Spotify que se desea incrustar (por ejemplo, ID de una canción o playlist). | ID de un recurso de Spotify           |
+| `content-type`  | `'show'` \| `'track'` \| `'play-list'` \| `'episode'` | Tipo de contenido de Spotify que se va a incrustar.                                                  | `'show'`, `'track'`, `'play-list'`, `'episode'` |
+
 
 For more details and advanced usage, you can check the project on [GitHub](https://github.com/ferbbo/lite-spotify-embed).
 
