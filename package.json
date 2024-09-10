@@ -6,9 +6,9 @@
     "type": "git",
     "url": "git@github.com:ferbbo/lite-spotify-embed.git"
   },
-  "main": "lite-spotify-embed.js",
-  "types": "lite-spotify-embed.d.ts",
-  "module": "lite-spotify-embed.js",
+  "main": "src/lite-spotify-embed.js",
+  "types": "src/lite-spotify-embed.d.ts",
+  "module": "src/lite-spotify-embed.js",
   "scripts": {
     "build": "tsc",
     "test": "npm run build && wtr src/**/*.test.js --coverage"
