@@ -39,6 +39,7 @@ describe('LiteSpotifyEmbed', () => {
       iframeURL: 'https://open.spotify.com/embed/track/12345',
       height: 300,
     };
+    expect(element.shadowRoot.querySelector('iframe')).to.be.null
     const btnPlay = element.shadowRoot.querySelector('.btn-play');
     btnPlay.disabled = false;
     btnPlay.click();
