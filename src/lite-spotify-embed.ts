@@ -15,7 +15,7 @@ interface ContentIframe {
   height: number;
 }
 
-class LiteSpotifyEmbed extends HTMLElement {
+export class LiteSpotifyEmbed extends HTMLElement {
   private $wrapper!: HTMLDivElement;
   private $btnPlay!: HTMLButtonElement;
   private _bgColor: string;

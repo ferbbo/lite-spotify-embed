@@ -19,5 +19,5 @@
     "removeComments": true
   },
   "include": ["**/*.ts"],
-  "exclude": []
+  "exclude": ["public", "node_modules"]
 }
