@@ -7,14 +7,21 @@
     "url": "git@github.com:ferbbo/lite-spotify-embed.git"
   },
   "main": "lite-spotify-embed.js",
-  "module": "lite-spotify-embed.js",
   "types": "lite-spotify-embed.d.ts",
+  "module": "lite-spotify-embed.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "npm run build && wtr src/**/*.test.js --coverage"
   },
   "keywords": [
     "web components",
-    "spotify"
+    "spotify",
+    "embed"
+  ],
+  "files": [
+    "src/lite-spotify-embed.d.ts",
+    "src/lite-spotify-embed.js",
+    "src/lite-spotify-embed.js.map"
   ],
   "author": "",
   "license": "ISC",
@@ -46,12 +53,15 @@
     "arrowParens": "avoid"
   },
   "devDependencies": {
+    "@open-wc/testing": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^8.2.0",
     "@typescript-eslint/parser": "^8.2.0",
+    "@web/test-runner": "^0.18.3",
     "eslint": "^9.9.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "prettier": "^3.3.3",
+    "sinon": "^18.0.0",
     "typescript": "^5.5.4"
   }
 }
