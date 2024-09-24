@@ -34,10 +34,10 @@ export class LiteSpotifyEmbed extends HTMLElement {
   private $wrapper!: HTMLDivElement;
   private $btnPlay!: HTMLButtonElement;
   private content!: ContentIframe;
-  private contentType: 'show' | 'track' | 'play-list' | 'episode' | null = null;
-  private tokenId: string | null = null;
+  private contentType: 'show' | 'track' | 'play-list' | 'episode' | null;
+  private tokenId: string | null;
   private _bgColor: string;
-  private isIntersecting: boolean = false;
+  private isIntersecting: boolean;
 
   private static _domains: Domians = {
     spotify: 'https://open.spotify.com',
@@ -55,8 +55,10 @@ export class LiteSpotifyEmbed extends HTMLElement {
 
   constructor() {
     super();
+    this.contentType = null;
+    this.tokenId = null;
     this._bgColor = '#4d4f51';
-
+    this.isIntersecting = false;
     LiteSpotifyEmbed.warnConnections();
     this.setDOM();
   }
