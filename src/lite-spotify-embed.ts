@@ -15,14 +15,40 @@ interface ContentIframe {
   height: number;
 }
 
+type Assets = {
+  fonts: string[] 
+}
+
+type Domians = {
+  spotify: string;
+  CDN: string;
+};
+
+type PrefetchProps =  {
+  kind: 'prefetch' | 'preconnect' | 'preload';
+  url: string;
+  isCORS?: boolean;
+}
+
 export class LiteSpotifyEmbed extends HTMLElement {
   private $wrapper!: HTMLDivElement;
   private $btnPlay!: HTMLButtonElement;
-  private _bgColor: string;
-  private tokenId: string;
-  private contentType: 'show' | 'track' | 'play-list' | 'episode' | null;
   private content!: ContentIframe;
+  private contentType: 'show' | 'track' | 'play-list' | 'episode' | null;
+  private tokenId: string;
+  private _bgColor: string;
 
+  private static _domains: Domians = {
+    spotify: 'https://open.spotify.com',
+    CDN: 'https://encore.scdn.co',
+  };
+  private static _assets: Assets = {
+    fonts: [
+      `${LiteSpotifyEmbed._domains.CDN}/fonts/CircularSp-Book-a00e99ef9996a3a157fb6b746856d04f.woff2`,
+      `${LiteSpotifyEmbed._domains.CDN}/fonts/CircularSp-Arab-Bold-c638a17a6708a3bd51bd2422c3fedcfb.woff2`,
+    ],
+  };
+  private static isPrefetch: boolean = false;
   [key: string]: any;
 
   constructor() {
@@ -30,6 +56,7 @@ export class LiteSpotifyEmbed extends HTMLElement {
     this._bgColor = '#4d4f51';
     this.tokenId = '';
     this.contentType = null;
+    LiteSpotifyEmbed.warnConnections();
     this.setDOM();
   }
 
@@ -42,13 +69,13 @@ export class LiteSpotifyEmbed extends HTMLElement {
     this.updateBgColor();
   }
 
-  checkAttributteAndFetch() {
+  private checkAttributteAndFetch() {
     if (this.tokenId && this.contentType) {
-      this._fetchSpotify();
+      this.fetchSpotify();
     }
   }
 
-  insertGlobalStyles() {
+  private static insertGlobalStyles() {
     if (document.getElementById('lite-spotify-embed-styles')) return;
     const styleElement = document.createElement('style');
     styleElement.id = 'lite-spotify-embed-styles';
@@ -57,19 +84,19 @@ export class LiteSpotifyEmbed extends HTMLElement {
           font-family: CircularSp;
           font-weight: 400;
           font-display: swap;
-          src: url('https://encore.scdn.co/fonts/CircularSp-Book-a00e99ef9996a3a157fb6b746856d04f.woff2') format('woff2');
+          src: url('${this._assets.fonts[0]}') format('woff2');
         }
         @font-face {
           font-family: CircularSpBold;
           font-weight: 400;
           font-display: swap;
-          src: url('https://encore.scdn.co/fonts/CircularSp-Arab-Bold-c638a17a6708a3bd51bd2422c3fedcfb.woff2') format('woff2');
+          src: url('${this._assets.fonts[1]}') format('woff2');
         }
       `;
     document.head.appendChild(styleElement);
   }
-  setDOM() {
-    this.insertGlobalStyles();
+  private setDOM() {
+    LiteSpotifyEmbed.insertGlobalStyles();
     const shadowDOM = this.attachShadow({ mode: 'open' });
     shadowDOM.innerHTML = `
             <div id="wrapper">
@@ -192,10 +219,10 @@ export class LiteSpotifyEmbed extends HTMLElement {
     this.$wrapper = shadowDOM.querySelector('#wrapper')!;
     this.$btnPlay = shadowDOM.querySelector('.btn-play')!;
   }
-  async _fetchSpotify() {
+  private async fetchSpotify() {
     try {
       const response = await fetch(
-        `https://open.spotify.com/oembed?url=https%3A%2F%2Fopen.spotify.com%2F${this.contentType}%2F${this.tokenId}`,
+        `${LiteSpotifyEmbed._domains.spotify}/oembed?url=https%3A%2F%2Fopen.spotify.com%2F${this.contentType}%2F${this.tokenId}`,
       );
       if (!response.ok) throw new Error(response.statusText);
       const data = await response.json();
@@ -214,12 +241,12 @@ export class LiteSpotifyEmbed extends HTMLElement {
       alert('Error to load resource iframe: ' + err);
     }
   }
-  updateBgColor() {
+  private updateBgColor() {
     this.$wrapper.querySelector<HTMLDivElement>(
       '#frame-fake',
     )!.style.backgroundColor = this.bgColor;
   }
-  updateFrameFake() {
+  private updateFrameFake() {
     if (this.content.img.url) {
       const $thumb =
         this.$wrapper.querySelector<HTMLImageElement>('#frame-fake .thumb');
@@ -241,7 +268,7 @@ export class LiteSpotifyEmbed extends HTMLElement {
     }
   }
 
-  addIframe() {
+  private addIframe() {
     const $iframeHTML = `
 			<iframe 
 			style="border-radius: 12px; position: absolute; z-index: 1; left: 0;top:0;" 
@@ -257,6 +284,39 @@ export class LiteSpotifyEmbed extends HTMLElement {
 			`;
     this.$wrapper.insertAdjacentHTML('beforeend', $iframeHTML);
   }
+
+  private static addPrefetch({ kind, url, isCORS }: PrefetchProps) {
+    const link = document.createElement('link');
+    link.rel = kind;
+    link.href = url;
+    if (isCORS) link.crossOrigin = 'anonymous';
+    document.head.appendChild(link);
+  }
+  private static warnConnections() {
+    if (LiteSpotifyEmbed.isPrefetch) return;
+
+    LiteSpotifyEmbed.addPrefetch({
+      kind: 'preconnect',
+      url: LiteSpotifyEmbed._domains.spotify,
+      isCORS: true,
+    });
+    LiteSpotifyEmbed.addPrefetch({
+      kind: 'preconnect',
+      url: LiteSpotifyEmbed._domains.CDN,
+      isCORS: true,
+    });
+    /** Preload */
+    LiteSpotifyEmbed.addPrefetch({
+      kind: 'preload',
+      url: LiteSpotifyEmbed._assets.fonts[0],
+    });
+    LiteSpotifyEmbed.addPrefetch({
+      kind: 'preload',
+      url: LiteSpotifyEmbed._assets.fonts[1],
+    });
+    LiteSpotifyEmbed.isPrefetch = true;
+  }
+
   static get observedAttributes() {
     return ['bg-color', 'token-id', 'content-type'];
   }
