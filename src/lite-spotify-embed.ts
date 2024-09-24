@@ -16,27 +16,28 @@ interface ContentIframe {
 }
 
 type Assets = {
-  fonts: string[] 
-}
+  fonts: string[];
+};
 
 type Domians = {
   spotify: string;
   CDN: string;
 };
 
-type PrefetchProps =  {
+type PrefetchProps = {
   kind: 'prefetch' | 'preconnect' | 'preload';
   url: string;
   isCORS?: boolean;
-}
+};
 
 export class LiteSpotifyEmbed extends HTMLElement {
   private $wrapper!: HTMLDivElement;
   private $btnPlay!: HTMLButtonElement;
   private content!: ContentIframe;
-  private contentType: 'show' | 'track' | 'play-list' | 'episode' | null;
-  private tokenId: string;
+  private contentType: 'show' | 'track' | 'play-list' | 'episode' | null = null;
+  private tokenId: string | null = null;
   private _bgColor: string;
+  private isIntersecting: boolean = false;
 
   private static _domains: Domians = {
     spotify: 'https://open.spotify.com',
@@ -49,13 +50,13 @@ export class LiteSpotifyEmbed extends HTMLElement {
     ],
   };
   private static isPrefetch: boolean = false;
+
   [key: string]: any;
 
   constructor() {
     super();
     this._bgColor = '#4d4f51';
-    this.tokenId = '';
-    this.contentType = null;
+
     LiteSpotifyEmbed.warnConnections();
     this.setDOM();
   }
@@ -70,7 +71,7 @@ export class LiteSpotifyEmbed extends HTMLElement {
   }
 
   private checkAttributteAndFetch() {
-    if (this.tokenId && this.contentType) {
+    if (this.tokenId && this.contentType && this.isIntersecting) {
       this.fetchSpotify();
     }
   }
@@ -238,7 +239,7 @@ export class LiteSpotifyEmbed extends HTMLElement {
       };
       this.updateFrameFake();
     } catch (err) {
-      alert('Error to load resource iframe: ' + err);
+      alert('Error to load resource iframe spotify: ' + err);
     }
   }
   private updateBgColor() {
@@ -267,7 +268,6 @@ export class LiteSpotifyEmbed extends HTMLElement {
         `${this.content.height}px`;
     }
   }
-
   private addIframe() {
     const $iframeHTML = `
 			<iframe 
@@ -285,6 +285,20 @@ export class LiteSpotifyEmbed extends HTMLElement {
     this.$wrapper.insertAdjacentHTML('beforeend', $iframeHTML);
   }
 
+  private setObserver() {
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            this.isIntersecting = true;
+            this.checkAttributteAndFetch();
+          }
+        });
+      },
+      { threshold: 0.1 },
+    );
+    observer.observe(this.$wrapper);
+  }
   private static addPrefetch({ kind, url, isCORS }: PrefetchProps) {
     const link = document.createElement('link');
     link.rel = kind;
@@ -326,6 +340,7 @@ export class LiteSpotifyEmbed extends HTMLElement {
       evt.preventDefault();
       this.addIframe();
     });
+    this.setObserver();
   }
   attributeChangedCallback(
     property: string,
@@ -337,7 +352,6 @@ export class LiteSpotifyEmbed extends HTMLElement {
       /^[Aa-zZ\-]+$/.test(property) &&
       property.replace(/-([a-z])/g, g => g[1].toUpperCase());
     if (propFormated) this[propFormated] = newValue;
-    this.checkAttributteAndFetch();
   }
 }
 customElements.define('lite-spotify-embed', LiteSpotifyEmbed);
