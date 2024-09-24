@@ -11,7 +11,8 @@
   "module": "src/lite-spotify-embed.js",
   "scripts": {
     "build": "tsc",
-    "test": "npm run build && wtr src/**/*.test.js --coverage"
+    "test": "npm run build && wtr src/**/*.test.js",
+    "test:coverage": "npm run test --coverage"
   },
   "keywords": [
     "web components",
