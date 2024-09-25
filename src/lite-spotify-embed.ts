@@ -37,7 +37,8 @@ export class LiteSpotifyEmbed extends HTMLElement {
   private contentType: 'show' | 'track' | 'play-list' | 'episode' | null;
   private tokenId: string | null;
   private _bgColor: string;
-  private isIntersecting: boolean;
+  private isIntersected: boolean;
+  private isFrameFakePlaceHolderLoaded: boolean;
 
   private static _domains: Domians = {
     spotify: 'https://open.spotify.com',
@@ -58,8 +59,8 @@ export class LiteSpotifyEmbed extends HTMLElement {
     this.contentType = null;
     this.tokenId = null;
     this._bgColor = '#4d4f51';
-    this.isIntersecting = false;
-    LiteSpotifyEmbed.warnConnections();
+    this.isIntersected = false;
+    this.isFrameFakePlaceHolderLoaded = false;
     this.setDOM();
   }
 
@@ -73,7 +74,7 @@ export class LiteSpotifyEmbed extends HTMLElement {
   }
 
   private checkAttributteAndFetch() {
-    if (this.tokenId && this.contentType && this.isIntersecting) {
+    if (this.tokenId && this.contentType && this.isIntersected) {
       this.fetchSpotify();
     }
   }
@@ -101,6 +102,10 @@ export class LiteSpotifyEmbed extends HTMLElement {
   private setDOM() {
     LiteSpotifyEmbed.insertGlobalStyles();
     const shadowDOM = this.attachShadow({ mode: 'open' });
+    let nonce = '';
+    if (window.liteSpotifyEmbedNonce) {
+      nonce = `nonce="${window.liteSpotifyEmbedNonce}"`;
+    }
     shadowDOM.innerHTML = `
             <div id="wrapper">
                 <div id="frame-fake">
@@ -123,7 +128,7 @@ export class LiteSpotifyEmbed extends HTMLElement {
                     </div>
                 </div>
             </div>
-            <style>
+            <style ${ nonce }>
                 #wrapper {
                     position: relative;
                     & > * {
@@ -239,7 +244,7 @@ export class LiteSpotifyEmbed extends HTMLElement {
         iframeURL: data.iframe_url,
         height: data.height,
       };
-      this.updateFrameFake();
+      this.initFrameFakePlaceHolder();
     } catch (err) {
       alert('Error to load resource iframe spotify: ' + err);
     }
@@ -249,7 +254,7 @@ export class LiteSpotifyEmbed extends HTMLElement {
       '#frame-fake',
     )!.style.backgroundColor = this.bgColor;
   }
-  private updateFrameFake() {
+  private initFrameFakePlaceHolder() {
     if (this.content.img.url) {
       const $thumb =
         this.$wrapper.querySelector<HTMLImageElement>('#frame-fake .thumb');
@@ -269,20 +274,19 @@ export class LiteSpotifyEmbed extends HTMLElement {
       this.$wrapper.querySelector<HTMLDivElement>('#frame-fake')!.style.height =
         `${this.content.height}px`;
     }
+    this.isFrameFakePlaceHolderLoaded = true;
   }
   private addIframe() {
     const $iframeHTML = `
 			<iframe 
-			style="border-radius: 12px; position: absolute; z-index: 1; left: 0;top:0;" 
+      style="border-radius: 12px; position: absolute; z-index: 1; left: 0; top: 0;" 
       src="${this.content.iframeURL}" 
-      width="100%" height="${this.content.height}" 
-      frameBorder="0" 
-      allowfullscreen="" 
-      allow="autoplay; 
-      clipboard-write; 
-      encrypted-media;
-      fullscreen;picture-in-picture" 
-      loading="lazy"></iframe>
+      width="100%" 
+      height="${this.content.height}" 
+      frameborder="0" 
+      allowfullscreen 
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">
+      </iframe>
 			`;
     this.$wrapper.insertAdjacentHTML('beforeend', $iframeHTML);
   }
@@ -291,8 +295,9 @@ export class LiteSpotifyEmbed extends HTMLElement {
     const observer = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            this.isIntersecting = true;
+          if (entry.isIntersecting && !this.isFrameFakePlaceHolderLoaded) {
+            LiteSpotifyEmbed.warnConnections();
+            this.isIntersected = entry.isIntersecting;
             this.checkAttributteAndFetch();
           }
         });
@@ -357,3 +362,9 @@ export class LiteSpotifyEmbed extends HTMLElement {
   }
 }
 customElements.define('lite-spotify-embed', LiteSpotifyEmbed);
+
+declare global {
+  interface Window {
+    liteSpotifyEmbedNonce: string;
+  }
+}
